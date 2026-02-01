@@ -1,34 +1,49 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-
-// Import pages (to be created)
-// import Dashboard from './pages/Dashboard'
-// import Contacts from './pages/Contacts'
-// import Deals from './pages/Deals'
-// import Login from './pages/Login'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from './context/AuthContext';
+import PrivateRoute from './components/PrivateRoute';
+import Layout from './components/Layout';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Contacts from './pages/Contacts';
+import ContactDetail from './pages/ContactDetail';
+import Deals from './pages/Deals';
+import DealDetail from './pages/DealDetail';
+import EmailCenter from './pages/EmailCenter';
+import Profile from './pages/Profile';
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50">
-        <Routes>
-          <Route path="/" element={<div className="flex items-center justify-center h-screen">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-800 mb-4">Welcome to CRM MVP</h1>
-              <p className="text-gray-600">Your modern customer relationship management system</p>
-            </div>
-          </div>} />
-          {/* Add more routes here */}
-          {/* <Route path="/login" element={<Login />} /> */}
-          {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-          {/* <Route path="/contacts" element={<Contacts />} /> */}
-          {/* <Route path="/deals" element={<Deals />} /> */}
-        </Routes>
-        <ToastContainer position="top-right" autoClose={3000} />
-      </div>
-    </Router>
-  )
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-gray-50">
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* Private routes */}
+            <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
+              <Route index element={<Navigate to="/dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="contacts" element={<Contacts />} />
+              <Route path="contacts/:id" element={<ContactDetail />} />
+              <Route path="deals" element={<Deals />} />
+              <Route path="deals/:id" element={<DealDetail />} />
+              <Route path="emails" element={<EmailCenter />} />
+              <Route path="profile" element={<Profile />} />
+            </Route>
+
+            {/* 404 */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+          <ToastContainer position="top-right" autoClose={3000} />
+        </div>
+      </Router>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
